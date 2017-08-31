@@ -1,0 +1,45 @@
+# This is a sample PBS script. It will request 1 processor on 1 node
+# for 4 hours.
+#
+ # Define email address for job notificationsEmail notification
+#PBS -M frm10@psu.edu
+#
+# Send email notification if job is (a) aborted, (b) begins, or (e) ends  
+#
+#PBS -m abe
+#
+#
+#Request 1 processors on 1 node 
+#   
+#PBS -l nodes=1:ppn=1
+#
+#   Request 5 hours of walltime
+#
+#PBS -l walltime=5:00:00
+#
+#   Request 4 gigabyte of memory per process
+#
+#PBS -l pmem=4gb
+#
+#
+#   Request that regular output and terminal output go to the same file
+#
+#PBS -j oe
+#
+#   The following is the body of the script. By default,
+#   PBS scripts execute in your home directory, not the
+#   directory from which they were submitted. The following
+#   line places you in the directory from which the job
+#   was submitted.
+#
+cd $PBS_O_WORKDIR
+
+#Load the R package
+
+module load R 
+#
+#run the R package 
+R  --vanilla <HTXmlDataParsingLinux.R> ForcingData.csv
+#
+
+
