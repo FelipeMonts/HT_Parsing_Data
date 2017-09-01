@@ -91,100 +91,36 @@ write.csv(Forcing.Data.Value,file=paste0("./OutputXMLFiles/",XMLFiles[1],".csv")
 
 
 
+###############################################################################################################
+#       Program to import and inspect Forcing Data from Hydroterre and transform it into the apropriate 
+#       format and units to be used in PIHM
+###############################################################################################################
 
 
-
-
-
-###########    Program to import and inspect Forcing Data from Hydroterre and transform it into the apropriate format and units to be used
-###########    in PIHM
-###########    Felipe Montes 2015 09 17
-
-
-
-#      set the working directory
-
-setwd("C:\\Felipe\\PIHM-CYCLES\\PIHM\\PIHM_Felipe\\CNS\\WE-38\\RScripts");
-
-
-#      Import data from the parsed XML downloaded from Hydroterre
-
-#      The data is segmented into decades and the decades have overlapping years therefore need to be corrected
-
-#       First Dedade
-HT.Data_79_89<-read.csv('C:\\Felipe\\PIHM-CYCLES\\PIHM\\PIHM_Felipe\\CNS\\Manhantango\\HydroTerre_Manhantango_ETV_Data_1979_1989\\ForcingData79_89.csv',header=T, as.is= T) ;
+# convert the DateTime format from factor to character
+Forcing.Data.Value$DateTime<-as.character(Forcing.Data.Value$DateTime)  ;
 
 
 # the time stamp is in the format 1979-01-01T00:00:00-05:00 wich is UTC - 05:00 (UTC- 5 hours is standard easten time EST)
 # Split the DateTime string in hydroterre using the T to get the Date and time separated
 
-HT.Date_79_89<-sapply(strsplit(HT.Data_79_89$DateTime,"T"),'[',1);
+Forcing.Date<-sapply(strsplit(Forcing.Data.Value$DateTime,"T"),'[',1);
 
 # Take the second part to the Split Hydroterre DateTime and get the time component and discard the "-05:00"
 
-HT.Time_79_89<-sapply(strsplit(HT.Data_79_89$DateTime,"T"),'[',2);
+Forcing.Time<-sapply(strsplit(Forcing.Data.Value$DateTime,"T"),'[',2);
 
-HT.Time.UTC_79_89<-sapply(strsplit(HT.Time_79_89,"-"),"[",1);
+Forcing.Time.UTC<-sapply(strsplit(Forcing.Time,"-"),"[",1);
+
 
 # Put together the time and date from Hydroterre in the format of MM-PHIM: 2008-01-01 00:00 and substact 5 hours (60*60*5 sec) to get EST
 
-HT.Data_79_89$UTC<-as.POSIXct(paste(HT.Date_79_89,HT.Time.UTC_79_89), format= "%Y-%m-%d %H:%M:%S")  ;
-
-
-#       Second decade
-
-
-HT.Data_89_99<-read.csv('C:\\Felipe\\PIHM-CYCLES\\PIHM\\PIHM_Felipe\\CNS\\Manhantango\\HydroTerreManhantango_ETV_Data_1989_1999\\ForcingData89_99.csv',header=T, as.is= T) ;
-
-
-HT.Date_89_99<-sapply(strsplit(HT.Data_89_99$DateTime,"T"),'[',1);
-
-# Take the second part to the Split Hydroterre DateTime and get the time component and discard the "-05:00"
-
-HT.Time_89_99<-sapply(strsplit(HT.Data_89_99$DateTime,"T"),'[',2);
-
-HT.Time.UTC_89_99<-sapply(strsplit(HT.Time_89_99,"-"),"[",1);
-
-# Put together the time and date from Hydroterre in the format of MM-PHIM: 2008-01-01 00:00 and substact 5 hours (60*60*5 sec) to get EST
-
-HT.Data_89_99$UTC<-as.POSIXct(paste(HT.Date_89_99,HT.Time.UTC_89_99), format= "%Y-%m-%d %H:%M:%S")  ;
-
-
-
-#      Third decade
-
-
-HT.Data_99_09<-read.csv('C:\\Felipe\\PIHM-CYCLES\\PIHM\\PIHM_Felipe\\CNS\\Manhantango\\HydroTerreManhantango_ETV_Data_1999_2010\\ForcingData99_2009.csv', header=T, as.is=T) ; 
-
-HT.Date_99_09<-sapply(strsplit(HT.Data_99_09$DateTime,"T"),'[',1);
-
-# Take the second part to the Split Hydroterre DateTime and get the time component and discard the "-05:00"
-
-HT.Time_99_09<-sapply(strsplit(HT.Data_99_09$DateTime,"T"),'[',2);
-
-HT.Time.UTC_99_09<-sapply(strsplit(HT.Time_99_09,"-"),"[",1);
-
-# Put together the time and date from Hydroterre in the format of MM-PHIM: 2008-01-01 00:00 and substact 5 hours (60*60*5 sec) to get EST
-
-HT.Data_99_09$UTC<-as.POSIXct(paste(HT.Date_99_09,HT.Time.UTC_99_09), format= "%Y-%m-%d %H:%M:%S")  ;
-
-
-#   Finally 2010
-
-
-# HT.Data_2010<-read.csv('',header=T, as.is=T) ;
-
-
-#   Put the complete data series together for processing
-
-
-HT.Data<-rbind(HT.Data_79_89[HT.Data_79_89$UTC>=as.POSIXct("1979-01-01 00:00:00") & HT.Data_79_89$UTC<=as.POSIXct("1989-12-31 23:00:00"),],HT.Data_89_99[HT.Data_89_99$UTC>=as.POSIXct("1990-01-01 00:00:00") & HT.Data_89_99$UTC<=as.POSIXct("1999-12-31 23:00:00"), ],HT.Data_99_09[HT.Data_99_09$UTC>=as.POSIXct("2001-01-01 00:00:00") & HT.Data_99_09$UTC<=as.POSIXct("2009-12-31 23:00:00"), ])
-
+Forcing.Data.Value$UTC<-as.POSIXct(paste(Forcing.Date,Forcing.Time.UTC), format= "%Y-%m-%d %H:%M:%S")  ;
 
 
 #  Calculate the time stamp in Eastern standard time from the UTC time stamp
 
-PIHM.TS<-HT.Data$Time.EST<-HT.Data$UTC-(60*60*5) ;
+PIHM.TS<-Forcing.Data.Value$Time.EST<-Forcing.Data.Value$UTC-(60*60*5) ;
 
 
 
