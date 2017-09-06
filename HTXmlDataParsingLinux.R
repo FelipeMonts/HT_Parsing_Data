@@ -33,7 +33,7 @@ setwd("C:\\Felipe\\PIHM-CYCLES\\PIHM\\PIHM_R_Scripts\\HT_Parsing_Data\\xmlforcin
 
 #Call to use the installed packages
 
-library("XML")
+library("XML")    ;
 
 
 ###############################################################################################################
@@ -124,11 +124,7 @@ PIHM.TS<-Forcing.Data.Value$Time.EST<-Forcing.Data.Value$UTC-(60*60*5) ;
 
 
 
-#      Select the columns that have the right Forcing index For WE 38 it is 045394
-
-
-
-#     names of the columns to be selected: based on the quandrant index according to location.
+#   names of the columns to be selected: based on the quandrant index according to location.
 
 
 #    MM-PIHM will need the following data series and corresponding header columns 
@@ -154,52 +150,73 @@ PIHM.TS<-Forcing.Data.Value$Time.EST<-Forcing.Data.Value$UTC-(60*60*5) ;
 
 
 
-
-
-
-
-
-
 ########### Select the index or indexes which will be used to extract data   #################
 
-HT.index<-c("045394");
+#  Select the columns that have the right Forcing index For WE 38 it is "045394" for the average of all frocing 
+# quadrants  "Avg"
+
+HT.index<-c("Avg");
 
 
 
 
 ########### Extract the index precipitation and convert it HT units (m/d) to PIHM units kg/m2/s #########
 
-Precip.index<-which(names(HT.Data) %in% paste("Precip", HT.index, sep="_"));
+Precip.index<-which(names(Forcing.Data.Value) %in% paste("Precip", HT.index, sep="_"));
+
+# convert the data from factor to numeric
+
+Precip.Data<-as.numeric(as.character(Forcing.Data.Value[,Precip.index]))   ;
+
+# conver units
 
 #   HT [m/d] x [m2/m2] x [1000kg H2O/1 m3H2O] x [1d/86400 s] = HT [m/d] x [1000/86400]= HT [kg /m2 s]
 
-PIHM.PRCP<-round(signif(HT.Data[,Precip.index]*(1000/86400),digits=3),8) ;
+
+PIHM.PRCP<-round(signif(Precip.Data*(1000/86400),digits=3),8) ;
 
 
 ##########  Extract HT index Temperature  and convert to PIHM units
 #   HT [c] + 273.15 K = HT K
 
-Temp.index<-which(names(HT.Data) %in% paste("Temp", HT.index, sep="_")) ;
+Temp.index<-which(names(Forcing.Data.Value) %in% paste("Temp", HT.index, sep="_")) ;
 
-PIHM.SFCTMP<-round(HT.Data[,Temp.index]+273.15,digits=2) ;
+# convert the data from factor to numeric
+
+Temp.Data<-as.numeric(as.character(Forcing.Data.Value[,Temp.index]))   ;
+
+
+PIHM.SFCTMP<-round(Temp.Data+273.15,digits=2) ;
 
 
 
 ##########  Extract HT index Relative humidity  and convert to PIHM units
 #   HT [1/100] x 100 = HT %
 
-RH.index<-which(names(HT.Data) %in% paste("RH", HT.index, sep="_")) ;
+RH.index<-which(names(Forcing.Data.Value) %in% paste("RH", HT.index, sep="_")) ;
 
-PIHM.RH<-round(HT.Data[,RH.index]*100, digits=2)  ;
+# convert the data from factor to numeric
+
+RH.Data<-as.numeric(as.character(Forcing.Data.Value[,RH.index]))   ;
+
+
+
+PIHM.RH<-round(RH.Data*100, digits=2)  ;
 
 
 ##########  Extract HT index Wind Speed and convert to PIHM units
 #   HT [m/d] x [d / 86400 s] = HT [m/s]
 
 
-Wind.index<-which(names(HT.Data) %in% paste("Wind", HT.index, sep="_")) ;
+Wind.index<-which(names(Forcing.Data.Value) %in% paste("Wind", HT.index, sep="_")) ;
 
-PIHM.SFCSPD<-round(HT.Data[,Wind.index]/86400, digits=2)  ;
+# convert the data from factor to numeric
+
+Wind.Data<-as.numeric(as.character(Forcing.Data.Value[,Wind.index]))   ;
+
+
+
+PIHM.SFCSPD<-round(Wind.Data/86400, digits=2)  ;
 
 
 
@@ -209,9 +226,14 @@ PIHM.SFCSPD<-round(HT.Data[,Wind.index]/86400, digits=2)  ;
 # HT [Joule/m2 s] x [Watt x s / Joule ] x [86400 s/d] = HT [w /m2 d]
 
 
-RN.index<-which(names(HT.Data) %in% paste("RN", HT.index, sep="_")) ;
+RN.index<-which(names(Forcing.Data.Value) %in% paste("RN", HT.index, sep="_")) ;
 
-PIHM.SOLAR<-round(HT.Data[,RN.index]/86400, digits=2)  ;
+# convert the data from factor to numeric
+
+RN.Data<-as.numeric(as.character(Forcing.Data.Value[,RN.Data]))   ;
+
+
+PIHM.SOLAR<-round(RN.Data/86400, digits=2)  ;
 
 
 
@@ -221,9 +243,15 @@ PIHM.SOLAR<-round(HT.Data[,RN.index]/86400, digits=2)  ;
 # HT [Joule/m2 s] x [Watt x s / Joule ] x [86400 s/d] = HT [w /m2 d]
 
 
-LW.index<-which(names(HT.Data) %in% paste("LW", HT.index, sep="_")) ;
+LW.index<-which(names(Forcing.Data.Value) %in% paste("LW", HT.index, sep="_")) ;
 
-PIHM.LONGWV<-round(HT.Data[,LW.index]/86400, digits=2)  ;
+
+# convert the data from factor to numeric
+
+LW.Data<-as.numeric(as.character(Forcing.Data.Value[,LW.index]))   ;
+
+
+PIHM.LONGWV<-round(LW.Data/86400, digits=2)  ;
 
 
 
