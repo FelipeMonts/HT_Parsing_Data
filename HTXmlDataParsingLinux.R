@@ -86,7 +86,7 @@ Forcing.Data.Nodes<-getNodeSet(Forcing1,Data.nodes)
 Forcing.Data.Value<-xmlToDataFrame(Forcing.Data.Nodes)
 
 
-write.csv(Forcing.Data.Value,file=paste0("./OutputXMLFiles/",XMLFiles[1],".csv"))
+#write.csv(Forcing.Data.Value,file=paste0("./OutputXMLFiles/",XMLFiles[1],".csv"))
 
 
 
@@ -230,7 +230,7 @@ RN.index<-which(names(Forcing.Data.Value) %in% paste("RN", HT.index, sep="_")) ;
 
 # convert the data from factor to numeric
 
-RN.Data<-as.numeric(as.character(Forcing.Data.Value[,RN.Data]))   ;
+RN.Data<-as.numeric(as.character(Forcing.Data.Value[,RN.index]))   ;
 
 
 PIHM.SOLAR<-round(RN.Data/86400, digits=2)  ;
@@ -265,10 +265,13 @@ PIHM.LONGWV<-round(LW.Data/86400, digits=2)  ;
 
 #    Add the heading column headings with the correct format
 
-cat(c("NUM_METEO_TS", "1" ), file="WE38.FORC", sep= "\t", fill=T) ;
-cat(c("METEO_TS" , "1" ,"WIND_LVL", "10.0" ), file="WE38.FORC", append=T, sep= "\t", fill=T) ;
-cat(c("TIME" , "PRCP" , "SFCTMP" , "RH" , "SFCSPD" , "SOLAR", "LONGWV" , "PRES"), file="WE38.FORC", append=T, sep= "\t", fill=T) ;
-cat(c("TS" , "kg/m2/s" , "K" , "%" , "m/s" , "W/m2" , "W/m2" , "Pa"),file="WE38.FORC", append=T, sep= "\t", fill=T) ;
+cat(c("NUM_METEO_TS", "1" ), file=paste0("./OutputXMLFiles/","PIHM_",XMLFiles[1],".FORC"), sep= "\t", fill=T) ;
+cat(c("METEO_TS" , "1" ,"WIND_LVL", "10.0" ), file=paste0("./OutputXMLFiles/","PIHM_",XMLFiles[1],".FORC"),
+    append=T, sep= "\t", fill=T) ;
+cat(c("TIME" , "PRCP" , "SFCTMP" , "RH" , "SFCSPD" , "SOLAR", "LONGWV" , "PRES"), 
+    file=paste0("./OutputXMLFiles/","PIHM_",XMLFiles[1],".FORC"), append=T, sep= "\t", fill=T) ;
+cat(c("TS" , "kg/m2/s" , "K" , "%" , "m/s" , "W/m2" , "W/m2" , "Pa"),
+file=paste0("./OutputXMLFiles/","PIHM_",XMLFiles[1],".FORC"), append=T, sep= "\t", fill=T) ;
 
 #  Add the data to the table
 
@@ -297,7 +300,7 @@ PIHM.data.sub<-PIHM.data[data.subset,] ;
 PIHM.data.sub$PIHM.TS<-format(PIHM.data.sub$PIHM.TS,format="%Y-%m-%d %H:%M") ;
 
 
-write.table(format(PIHM.data.sub, scientific=6), file="WE38.FORC", append=T, sep= "\t", quote=F , col.names = F, row.names = F) ;
+write.table(format(PIHM.data.sub, scientific=6), file=paste0("./OutputXMLFiles/","PIHM_",XMLFiles[1],".FORC"), append=T, sep= "\t", quote=F , col.names = F, row.names = F) ;
 
 
 
